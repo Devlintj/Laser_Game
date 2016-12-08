@@ -28,6 +28,7 @@ class GameWindow < Gosu::Window
     @health = Array.new
 
     @laser = Array.new
+    @enemy_laser = Array.new
 
     @laser_counter = 1
 
@@ -50,9 +51,16 @@ class GameWindow < Gosu::Window
     @player.collect_stars(@stars)
     @player.collect_health(@health)
     @player.take_damage(@enemies)
+    @player.take_laser_damage(@enemy_laser)
 
     if rand(100) < 4 and @stars.size < 25 then
       @stars.push(Star.new(@star_anim))
+    end
+
+    @enemies.each do |enemy|
+      if rand(200) < 4
+        @enemy_laser.push(Laser.new(enemy.x, enemy.y, enemy.angle))
+      end
     end
 
     if rand(1000) < 10 and @enemies.size < 10 then
@@ -78,12 +86,18 @@ class GameWindow < Gosu::Window
 
     @enemies.each {|enemies| enemies.accelerate}
     @enemies.each {|enemies| enemies.move}
+    @enemies.each {|enemies| enemies.take_laser_damage(@laser)}
 
     @laser.each {|laser| laser.accelerate}
     @laser.each {|laser| laser.move}
     @laser.each {|laser| laser.hit_wall?(@laser)}
 
+    @enemy_laser.each {|enemy_laser| enemy_laser.accelerate}
+    @enemy_laser.each {|enemy_laser| enemy_laser.move}
+    @enemy_laser.each {|enemy_laser| enemy_laser.hit_wall?(@enemy_laser)}
+
     death
+    enemy_death
   end
 
   def draw
@@ -91,6 +105,7 @@ class GameWindow < Gosu::Window
     @enemies.each {|enemies| enemies.draw }
     @health.each {|health| health.draw}
     @laser.each {|laser| laser.draw}
+    @enemy_laser.each {|laser| laser.draw}
     @background_image.draw(0,0,0)
     @stars.each { |star| star.draw}
     @font.draw("Score: #{@player.score}", 10, 10, ZOrder::UI, 1.0, 1.0, 0xff_ffff00)
@@ -106,6 +121,16 @@ class GameWindow < Gosu::Window
   def death
     if @player.lives < 1
       close
+    end
+  end
+
+  def enemy_death
+    arry_place = 0
+    @enemies.each do |enemy|
+      if enemy.lives < 1
+        @enemies.delete_at(arry_place)
+      end
+      arry_place += 1
     end
   end
 end

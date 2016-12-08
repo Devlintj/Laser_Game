@@ -61,6 +61,15 @@ class Player
     end
   end
 
+  def take_laser_damage(laser)
+    if laser.reject! {|laser| Gosu::distance(@x, @y, laser.x, laser.y) < 30} then
+      @lives -= 1
+      true
+    else
+      false
+    end
+  end
+
   def collect_health(health)
     if health.reject! {|health| Gosu::distance(@x, @y, health.x, health.y) < 50} then
       @lives += 1

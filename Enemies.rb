@@ -2,7 +2,7 @@ require './Player'
 
 class Enemies < Player
 
-  attr_reader :x, :y
+  attr_accessor :x, :y, :angle, :lives
 
   def initialize
     enemies = []
@@ -39,7 +39,7 @@ class Enemies < Player
     @x = rand * 1280
     @y = @vel_x = @vel_y = @angle = 0.0
 
-    @lives = rand(3) + 1
+    @lives = 10 + rand(5)
   end
 
   def move
